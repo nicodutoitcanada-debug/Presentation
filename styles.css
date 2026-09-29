@@ -3107,3 +3107,642 @@ button{font:inherit}
     width:min(42vw,220px);
   }
 }
+
+
+/* =========================================================
+   V30 — VIDEO SHOWCASE COPY PANEL
+   ========================================================= */
+
+/*
+  Every user-gameplay clip now places its white copy on a subtle
+  translucent panel so it remains readable over the animated background.
+*/
+.showcase-copy{
+  padding:18px 22px;
+  border-radius:18px;
+  background:rgba(0,0,0,.30);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+}
+
+
+/* =========================================================
+   V30 — MOBILE PORTRAIT: CAMERA / OLD-TECHNOLOGY SLIDE
+   ========================================================= */
+
+/*
+  On portrait phones the original 16:9 plan stage was being centered
+  vertically, wasting the large empty areas above and below it.
+  In portrait we instead use the full viewport:
+    - visual / floor-plan area in the upper portion
+    - explanatory panel in the lower portion
+*/
+@media (orientation:portrait) and (max-width:760px){
+
+  #page-2 .plan-stage{
+    left:0;
+    top:0;
+    width:100vw;
+    height:100dvh;
+    min-height:100vh;
+    transform:none;
+    overflow:hidden;
+
+    /* Camera position remapped to the new upper visual region. */
+    --camera-x:47.2%;
+    --camera-y:34.8%;
+    --camera-ring-size:clamp(74px,19vw,108px);
+  }
+
+  /* Branding lives above the plan instead of over the panel. */
+  #page-2 .plan-branding{
+    left:5%;
+    top:12.5%;
+    gap:10px;
+  }
+
+  #page-2 .plan-logo{
+    width:48px;
+  }
+
+  #page-2 .plan-brand-title{
+    font-size:clamp(17px,5vw,22px);
+  }
+
+  #page-2 .plan-brand-name{
+    margin-top:4px;
+    font-size:14px;
+  }
+
+  /*
+    Floor-plan, sweep and mask all share the exact same responsive box,
+    keeping the camera sweep aligned.
+  */
+  #page-2 .top-view,
+  #page-2 .cam-view-mask-layer{
+    left:4%;
+    top:18%;
+    width:92%;
+    height:31%;
+  }
+
+  /*
+    The copy panel owns the lower half of the screen.
+    It no longer overlays the floor-plan visual.
+  */
+  #page-2 .technology-panel{
+    left:5%;
+    right:5%;
+    top:53%;
+    bottom:4%;
+    width:auto;
+    min-height:0;
+    max-height:none;
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+
+    padding:20px 20px 18px;
+    border-radius:22px;
+  }
+
+  #page-2 .technology-panel h2{
+    flex:0 0 auto;
+    margin:0 0 14px;
+    font-size:clamp(22px,6vw,30px);
+    line-height:1.05;
+  }
+
+  #page-2 .technology-body{
+    flex:1 1 auto;
+    min-height:0;
+    font-size:clamp(13px,3.5vw,16px);
+    line-height:1.27;
+  }
+
+  #page-2 .technology-body p{
+    margin:0 0 12px;
+  }
+
+  #page-2 .technology-body p:last-child{
+    margin-bottom:0;
+  }
+
+  #page-2 .panel-continue-button{
+    flex:0 0 auto;
+    width:min(78%,240px);
+    margin:14px auto 0;
+    min-height:42px;
+  }
+
+  /*
+    Keep global Home / Fullscreen above the content while respecting
+    the phone's browser/safe-area top region.
+  */
+  .icon-button{
+    top:max(18px,env(safe-area-inset-top));
+  }
+
+  /*
+    Gameplay video pages: on portrait, let copy use available width
+    but keep NEXT clearly visible beneath it.
+  */
+  .video-showcase-card{
+    width:92vw;
+  }
+
+  .showcase-copy{
+    max-width:none;
+    padding:15px 17px;
+    border-radius:16px;
+    font-size:clamp(14px,3.7vw,17px);
+  }
+
+  .showcase-footer{
+    gap:14px;
+  }
+
+  .showcase-next-button{
+    align-self:center;
+    min-width:150px;
+  }
+}
+
+/* Extra-tight portrait phones */
+@media (orientation:portrait) and (max-width:430px){
+  #page-2 .plan-branding{
+    top:11.5%;
+  }
+
+  #page-2 .top-view,
+  #page-2 .cam-view-mask-layer{
+    top:17%;
+    height:30%;
+  }
+
+  #page-2 .technology-panel{
+    top:51.5%;
+    bottom:3%;
+    padding:17px 17px 15px;
+  }
+
+  #page-2 .technology-panel h2{
+    font-size:21px;
+    margin-bottom:11px;
+  }
+
+  #page-2 .technology-body{
+    font-size:13px;
+    line-height:1.23;
+  }
+
+  #page-2 .technology-body p{
+    margin-bottom:9px;
+  }
+
+  #page-2 .panel-continue-button{
+    margin-top:10px;
+    min-height:40px;
+  }
+}
+
+
+/* =========================================================
+   V31 — SHOWCASE COPY PANEL REFINEMENT
+   ========================================================= */
+
+.showcase-copy{
+  background:rgba(0,0,0,.60);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:18px;
+  -webkit-backdrop-filter:blur(16px);
+  backdrop-filter:blur(16px);
+}
+
+/* =========================================================
+   V31 — VIDEO LOADING LOTTIE INSIDE VIDEO WINDOW
+   ========================================================= */
+
+.showcase-video-loader{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.72);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity 180ms ease, visibility 0s linear 180ms;
+}
+
+.showcase-video-loader.is-visible{
+  opacity:1;
+  visibility:visible;
+  transition:opacity 180ms ease;
+}
+
+.showcase-video-loader-lottie{
+  width:min(18%,180px);
+  aspect-ratio:1;
+}
+
+/* Keep playback controls above the loader only once video is ready */
+.showcase-playback-controls{
+  z-index:6;
+}
+
+/* =========================================================
+   V31 — WIDE / SHORT VIEWPORT FIT
+   ========================================================= */
+
+/*
+  On wide but short screens the previous card was vertically centered
+  with a fixed max width, which could push the video top above the viewport
+  and the text/NEXT below it.
+  This mode sizes the card by AVAILABLE HEIGHT first.
+*/
+@media (min-aspect-ratio:16/10) and (max-height:900px){
+
+  .video-showcase-card{
+    top:50%;
+    width:min(84vw, calc((100dvh - 110px) * 1.48));
+    max-height:calc(100dvh - 34px);
+    transform:translate(-50%,-50%) scale(.92);
+  }
+
+  .video-showcase-card.is-visible{
+    animation:showcaseCardInWide 1100ms cubic-bezier(.16,.84,.26,1) forwards;
+  }
+
+  @keyframes showcaseCardInWide{
+    from{
+      opacity:0;
+      transform:translate(-50%,-50%) scale(.92);
+    }
+    to{
+      opacity:1;
+      transform:translate(-50%,-50%) scale(1);
+    }
+  }
+
+  .showcase-video-shell{
+    max-height:calc(100dvh - 230px);
+  }
+
+  .showcase-footer{
+    margin-top:14px;
+    gap:22px;
+  }
+
+  .showcase-copy{
+    padding:13px 16px;
+    font-size:clamp(13px,1.05vw,18px);
+    line-height:1.25;
+  }
+
+  .showcase-copy p{
+    margin-bottom:7px;
+  }
+
+  .showcase-next-button{
+    min-width:145px;
+    height:42px;
+  }
+
+  .showcase-playback-controls{
+    bottom:12px;
+  }
+
+  .showcase-icon-button{
+    width:34px;
+    height:34px;
+  }
+}
+
+/* Extra-wide / especially short screens */
+@media (min-aspect-ratio:2/1) and (max-height:760px){
+  .video-showcase-card{
+    width:min(82vw, calc((100dvh - 90px) * 1.55));
+  }
+
+  .showcase-video-shell{
+    max-height:calc(100dvh - 205px);
+  }
+
+  .showcase-footer{
+    margin-top:10px;
+  }
+
+  .showcase-copy{
+    padding:10px 14px;
+    font-size:clamp(12px,.95vw,16px);
+  }
+
+  .showcase-next-button{
+    min-width:135px;
+    height:40px;
+  }
+}
+
+@media (orientation:portrait) and (max-width:760px){
+  .showcase-copy{
+    background:rgba(0,0,0,.60);
+    border:1px solid rgba(255,255,255,.22);
+    -webkit-backdrop-filter:blur(16px);
+    backdrop-filter:blur(16px);
+  }
+
+  .showcase-video-loader-lottie{
+    width:min(28%,150px);
+  }
+}
+
+
+/* =========================================================
+   V32 — 360 GUIDE / BUTTON SPACING
+   Prevent guide text and controls from ever occupying the same space.
+   Applies to BOTH the outside-sphere and inside-sphere states.
+   ========================================================= */
+
+/*
+  Controls own the bottom band.
+  The guide always sits a full control-height + gap above that band.
+*/
+.sphere-controls{
+  bottom:max(18px,4vh);
+}
+
+.sphere-guide,
+.sphere-inside-guide{
+  bottom:calc(max(18px,4vh) + 84px);
+}
+
+/* Give the explanatory copy its own compact readable block. */
+.sphere-guide-copy{
+  max-width:min(760px,78vw);
+  margin-top:8px;
+}
+
+/* =========================================================
+   LANDSCAPE PHONES / WIDE SHORT WINDOWS
+   ========================================================= */
+@media (orientation:landscape) and (max-height:620px){
+
+  .sphere-controls{
+    bottom:max(12px,2.8vh);
+    width:min(92vw,760px);
+    gap:12px;
+  }
+
+  .sphere-controls .standard-continue{
+    height:44px;
+    min-height:44px;
+    padding:0 22px;
+    font-size:clamp(12px,1.55vw,15px);
+  }
+
+  /*
+    44px control height + roughly 24px clear gap.
+    This guarantees that neither the outside nor inside guide
+    can fall behind the buttons.
+  */
+  .sphere-guide,
+  .sphere-inside-guide{
+    bottom:calc(max(12px,2.8vh) + 68px);
+    width:min(82vw,760px);
+  }
+
+  .drag-hand{
+    margin-bottom:2px;
+    font-size:clamp(23px,4.3vh,34px);
+  }
+
+  .sphere-guide-title{
+    font-size:clamp(13px,2.6vh,17px);
+    line-height:1.05;
+  }
+
+  .sphere-guide-copy{
+    max-width:min(760px,82vw);
+    margin-top:5px;
+    font-size:clamp(12px,2.35vh,15px);
+    line-height:1.18;
+  }
+}
+
+/* Extra-short mobile landscape */
+@media (orientation:landscape) and (max-height:480px){
+
+  .sphere-controls{
+    bottom:10px;
+  }
+
+  .sphere-controls .standard-continue{
+    height:40px;
+    min-height:40px;
+    padding:0 18px;
+    font-size:12px;
+  }
+
+  .sphere-guide,
+  .sphere-inside-guide{
+    bottom:66px;
+    width:86vw;
+  }
+
+  .drag-hand{
+    font-size:22px;
+    margin-bottom:1px;
+  }
+
+  .sphere-guide-title{
+    font-size:12px;
+  }
+
+  .sphere-guide-copy{
+    margin-top:4px;
+    font-size:11.5px;
+    line-height:1.14;
+    max-width:82vw;
+  }
+}
+
+/* Existing narrow-width mobile rules had both guide and controls too close.
+   Override them with explicit separated bands. */
+@media(max-width:700px){
+
+  .sphere-controls{
+    bottom:max(14px,3vh);
+    width:92vw;
+  }
+
+  .sphere-guide,
+  .sphere-inside-guide{
+    bottom:calc(max(14px,3vh) + 76px);
+    width:88vw;
+  }
+}
+
+
+/* =========================================================
+   V33 — OLD / NEW METHOD: WIDE-SHORT RESPONSIVE FIT
+   Fixes mobile landscape and other short/wide viewports.
+   ========================================================= */
+
+/*
+  The original desktop composition is tall. On short landscape screens,
+  scale and reposition the left content as a single block so the
+  final bullet and CONTINUE button remain fully visible.
+*/
+@media (orientation:landscape) and (max-height:700px){
+
+  .old-method-content,
+  .new-method-content{
+    left:4.8%;
+    top:7%;
+    width:min(47vw,700px);
+
+    transform-origin:top left;
+    transform:scale(.86);
+  }
+
+  .old-method-eyebrow,
+  .new-method-eyebrow{
+    margin-bottom:18px;
+    font-size:clamp(14px,2.4vh,19px);
+  }
+
+  .old-method-title-row,
+  .new-method-title-row{
+    gap:18px;
+  }
+
+  .old-method-logo,
+  .new-method-logo{
+    width:clamp(70px,8vh,110px);
+  }
+
+  .old-method-title-row h2,
+  .new-method-title-row h2{
+    font-size:clamp(28px,5.1vh,45px);
+    line-height:1.00;
+  }
+
+  .old-method-divider,
+  .new-method-divider{
+    margin:22px 0 20px;
+  }
+
+  .old-method-intro,
+  .new-method-intro{
+    margin-bottom:24px;
+    font-size:clamp(15px,2.65vh,21px);
+    line-height:1.22;
+  }
+
+  .old-method-bullet,
+  .new-method-bullet{
+    grid-template-columns:30px 1fr;
+    gap:14px;
+    margin:0 0 17px 20px;
+  }
+
+  .old-method-dot,
+  .new-method-dot{
+    width:25px;
+    height:25px;
+  }
+
+  .old-method-bullet h3,
+  .new-method-bullet h3{
+    margin-bottom:4px;
+    font-size:clamp(17px,3vh,24px);
+    line-height:1.02;
+  }
+
+  .old-method-bullet p,
+  .new-method-bullet p{
+    font-size:clamp(12px,2.2vh,17px);
+    line-height:1.18;
+  }
+
+  /*
+    Keep Continue clear of the image edge and fully on-screen.
+  */
+  .old-method-continue,
+  .new-method-continue{
+    right:4%;
+    bottom:5%;
+    min-width:170px;
+    height:44px;
+  }
+}
+
+
+/* Especially short mobile landscape */
+@media (orientation:landscape) and (max-height:520px){
+
+  .old-method-content,
+  .new-method-content{
+    top:6%;
+    width:min(49vw,660px);
+    transform:scale(.74);
+  }
+
+  .old-method-eyebrow,
+  .new-method-eyebrow{
+    margin-bottom:12px;
+  }
+
+  .old-method-divider,
+  .new-method-divider{
+    margin:16px 0 14px;
+  }
+
+  .old-method-intro,
+  .new-method-intro{
+    margin-bottom:17px;
+  }
+
+  .old-method-bullet,
+  .new-method-bullet{
+    margin-bottom:12px;
+  }
+
+  .old-method-continue,
+  .new-method-continue{
+    right:3.5%;
+    bottom:4%;
+    min-width:150px;
+    height:40px;
+    font-size:12px;
+  }
+}
+
+
+/*
+  Ultra-wide mobile landscape (common phone browser ratio).
+  Give the left block slightly more width while keeping it vertically compact.
+*/
+@media (orientation:landscape) and (min-aspect-ratio:2/1) and (max-height:700px){
+
+  .old-method-content,
+  .new-method-content{
+    left:4.4%;
+    width:50vw;
+  }
+
+  .old-method-title-row h2,
+  .new-method-title-row h2{
+    font-size:clamp(26px,4.8vh,42px);
+  }
+
+  .old-method-continue,
+  .new-method-continue{
+    right:4.5%;
+    bottom:5%;
+  }
+}

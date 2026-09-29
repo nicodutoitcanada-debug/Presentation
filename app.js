@@ -48,6 +48,10 @@ const sequenceContinueBtn2 = document.getElementById('sequenceContinueBtn2');
 const videoShowcaseStage = document.getElementById('videoShowcaseStage');
 const videoShowcaseCard = document.getElementById('videoShowcaseCard');
 const showcaseVideo = document.getElementById('showcaseVideo');
+
+const showcaseVideoLoader = document.getElementById('showcaseVideoLoader');
+const showcaseVideoLoaderLottie = document.getElementById('showcaseVideoLoaderLottie');
+
 const showcaseCopy = document.getElementById('showcaseCopy');
 const showcaseNextBtn = document.getElementById('showcaseNextBtn');
 
@@ -107,6 +111,7 @@ let leapTransitionRunning = false;
 let showcaseClip = 1;
 let showcaseTransitionRunning = false;
 let showcaseClipChangeRunning = false;
+let showcaseVideoLoaderAnimation = null;
 let oldMethodTransitionRunning = false;
 let oldMethodTimers = [];
 let newMethodTransitionRunning = false;
@@ -165,6 +170,38 @@ function initLoadingLottie(){
     autoplay: true,
     path: 'Lottie/loading intro.json'
   });
+}
+
+
+function initShowcaseVideoLoader(){
+  if(showcaseVideoLoaderAnimation || !showcaseVideoLoaderLottie || !window.lottie) return;
+
+  showcaseVideoLoaderAnimation = window.lottie.loadAnimation({
+    container: showcaseVideoLoaderLottie,
+    renderer: 'svg',
+    loop: true,
+    autoplay: false,
+    path: 'Lottie/loading intro.json'
+  });
+}
+
+function showShowcaseVideoLoader(){
+  initShowcaseVideoLoader();
+  showcaseVideoLoader.classList.add('is-visible');
+  showcaseVideoLoader.setAttribute('aria-hidden','false');
+
+  if(showcaseVideoLoaderAnimation){
+    showcaseVideoLoaderAnimation.goToAndPlay(0,true);
+  }
+}
+
+function hideShowcaseVideoLoader(){
+  showcaseVideoLoader.classList.remove('is-visible');
+  showcaseVideoLoader.setAttribute('aria-hidden','true');
+
+  if(showcaseVideoLoaderAnimation){
+    showcaseVideoLoaderAnimation.stop();
+  }
 }
 
 function showLoading(){
@@ -1327,13 +1364,31 @@ function playShowcaseClip(clip){
   showcaseClip = clip;
   setShowcaseCopy(clip);
 
+  const src = `MP4/Vid_${String(clip).padStart(2,'0')}.mp4`;
+
   showcaseVideo.pause();
-  showcaseVideo.src = `MP4/Vid_${String(clip).padStart(2,'0')}.mp4`;
+  showShowcaseVideoLoader();
+
+  const onReady = () => {
+    showcaseVideo.removeEventListener('loadeddata',onReady);
+    showcaseVideo.removeEventListener('canplay',onReady);
+    hideShowcaseVideoLoader();
+
+    const p = showcaseVideo.play();
+    if(p){
+      p.catch(err => console.warn(`${src} could not play:`,err));
+    }
+  };
+
+  showcaseVideo.addEventListener('loadeddata',onReady,{once:true});
+  showcaseVideo.addEventListener('canplay',onReady,{once:true});
+
+  showcaseVideo.src = src;
   showcaseVideo.load();
 
-  const p = showcaseVideo.play();
-  if(p){
-    p.catch(err => console.warn(`MP4/Vid_${String(clip).padStart(2,'0')}.mp4 could not play:`,err));
+  // If browser already has it fully cached, this fires almost immediately.
+  if(showcaseVideo.readyState >= 3){
+    onReady();
   }
 
   // Always preload exactly what NEXT will need.
@@ -1426,6 +1481,7 @@ function resetVideoShowcase(){
 
   showcaseVideo.pause();
   showcaseVideo.currentTime = 0;
+  hideShowcaseVideoLoader();
   showcaseVideo.src = 'MP4/Vid_01.mp4';
 
   videoShowcaseCard.classList.remove('is-visible');
@@ -2248,4 +2304,5 @@ if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded',initLoadingLottie,{once:true});
 }else{
   initLoadingLottie();
+  initShowcaseVideoLoader();
 }

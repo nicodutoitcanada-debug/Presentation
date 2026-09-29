@@ -1,42 +1,22 @@
-HOME VIEW V29 — LOTTIE LOADING + STEP-AHEAD PRELOADING
+HOME VIEW V33 — OLD/NEW METHOD MOBILE LANDSCAPE FIX
 
 Replace:
 - index.html
 - styles.css
 - app.js
 
-NEW LOADING ANIMATION
-Whenever navigation has to WAIT for a file, the presentation now shows:
-Lottie/loading intro.json
+FIXED:
+Both:
+- OLD METHOD (red bullets)
+- NEW METHOD (green bullets)
 
-The loader is a full-screen overlay and disappears automatically as soon
-as the required asset is ready.
+now adapt to wide/short landscape screens.
 
-NOTE:
-This version loads lottie-web from:
-https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js
+Changes:
+- Left content block scales down as a unit on short landscape screens.
+- Title/logo/intro/bullets reduce proportionally.
+- Bullet spacing tightens so all three bullets remain visible.
+- CONTINUE stays fully on-screen at bottom-right.
+- Extra rules handle very short and ultra-wide mobile landscape ratios.
 
-STEP-AHEAD PRELOADING
-The presentation now deliberately preloads the NEXT asset while the user
-is viewing the current step.
-
-Examples:
-- Opening page -> preloads Blue Background + Title 01
-- Title 01 -> preloads Plan assets
-- Sphere -> preloads Blue Background + Title 02
-- Title 02 -> preloads Vid_01
-- Vid_01 -> preloads Vid_02
-- Vid_02 -> preloads Vid_03
-- Vid_03 -> preloads Vid_04
-- Vid_04 -> preloads Vid_05
-- Vid_05 -> preloads old method.mp4
-- Old Method -> preloads new method.mp4
-- New Method -> preloads stage.jpg
-- Ownership -> preloads graph assets
-- Graph -> preloads final Title 02 + Blue Background
-
-If the next asset is already ready, the loader never flashes on screen.
-It only appears when there is an actual wait.
-
-REQUIRED EXISTING ASSET
-Lottie/loading intro.json
+All V32 360-view spacing fixes and all previous loading/responsive behavior remain unchanged.

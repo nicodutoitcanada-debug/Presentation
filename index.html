@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Home View Online Presentation</title>
-  <link rel="stylesheet" href="styles.css?v=29">
+  <link rel="stylesheet" href="styles.css?v=33">
 </head>
 <body>
 <main id="presentation" class="presentation">
@@ -201,6 +201,10 @@
       <div class="showcase-video-shell">
         <video id="showcaseVideo" class="showcase-video"
           src="MP4/Vid_01.mp4" muted loop playsinline preload="auto"></video>
+
+        <div id="showcaseVideoLoader" class="showcase-video-loader" aria-hidden="true">
+          <div id="showcaseVideoLoaderLottie" class="showcase-video-loader-lottie"></div>
+        </div>
 
         <div class="showcase-playback-controls" aria-label="Video controls">
           <button id="showcasePauseBtn" class="showcase-icon-button" type="button" aria-label="Pause">
@@ -652,6 +656,6 @@
 
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-<script src="app.js?v=29"></script>
+<script src="app.js?v=33"></script>
 </body>
 </html>
