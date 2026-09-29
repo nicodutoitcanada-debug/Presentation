@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Home View Online Presentation</title>
-  <link rel="stylesheet" href="styles.css?v=28">
+  <link rel="stylesheet" href="styles.css?v=29">
 </head>
 <body>
 <main id="presentation" class="presentation">
@@ -629,6 +629,15 @@
 
   </section>
 
+
+  <!-- =========================================================
+       V29 — GLOBAL LOADING OVERLAY
+       Uses Lottie/loading intro.json
+       ========================================================= -->
+  <div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+    <div id="loadingLottie" class="loading-lottie" aria-label="Loading"></div>
+  </div>
+
   <button class="icon-button home-button" id="homeBtn" aria-label="Home">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M3 10.5 12 3l9 7.5v9.25a1.25 1.25 0 0 1-1.25 1.25H15v-6H9v6H4.25A1.25 1.25 0 0 1 3 19.75z"/>
@@ -642,6 +651,7 @@
   </button>
 
 </main>
-<script src="app.js?v=28"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<script src="app.js?v=29"></script>
 </body>
 </html>

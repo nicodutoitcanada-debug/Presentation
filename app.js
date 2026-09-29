@@ -80,6 +80,10 @@ const finalTitleSequence = document.getElementById('finalTitleSequence');
 const finalTitleSequenceFrame = document.getElementById('finalTitleSequenceFrame');
 const requestDemoBtn = document.getElementById('requestDemoBtn');
 
+const loadingOverlay = document.getElementById('loadingOverlay');
+const loadingLottie = document.getElementById('loadingLottie');
+
+
 
 
 
@@ -142,6 +146,199 @@ function cssPercent(name){
   return parseFloat(raw) / 100;
 }
 
+
+/* =========================================================
+   V29 — LOADING + STEP-AHEAD PRELOADING
+   ========================================================= */
+
+const preloadCache = new Map();
+let loadingAnimation = null;
+let loadingDepth = 0;
+
+function initLoadingLottie(){
+  if(loadingAnimation || !loadingLottie || !window.lottie) return;
+
+  loadingAnimation = window.lottie.loadAnimation({
+    container: loadingLottie,
+    renderer: 'svg',
+    loop: true,
+    autoplay: true,
+    path: 'Lottie/loading intro.json'
+  });
+}
+
+function showLoading(){
+  loadingDepth += 1;
+  initLoadingLottie();
+
+  loadingOverlay.classList.add('is-visible');
+  loadingOverlay.setAttribute('aria-hidden','false');
+
+  if(loadingAnimation){
+    loadingAnimation.play();
+  }
+}
+
+function hideLoading(){
+  loadingDepth = Math.max(0,loadingDepth-1);
+  if(loadingDepth > 0) return;
+
+  loadingOverlay.classList.remove('is-visible');
+  loadingOverlay.setAttribute('aria-hidden','true');
+}
+
+function cachePromise(key,factory){
+  if(preloadCache.has(key)){
+    return preloadCache.get(key);
+  }
+
+  const promise = factory().catch(err => {
+    preloadCache.delete(key);
+    throw err;
+  });
+
+  preloadCache.set(key,promise);
+  return promise;
+}
+
+function preloadImageFile(src){
+  return cachePromise(`img:${src}`,() => new Promise((resolve,reject) => {
+    const img = new Image();
+    img.onload = () => resolve(src);
+    img.onerror = () => reject(new Error(`Image failed to load: ${src}`));
+    img.src = src;
+  }));
+}
+
+function preloadVideoFile(src){
+  return cachePromise(`video:${src}`,() => new Promise((resolve,reject) => {
+    const video = document.createElement('video');
+    let settled = false;
+
+    const finish = () => {
+      if(settled) return;
+      settled = true;
+      cleanup();
+      resolve(src);
+    };
+
+    const fail = () => {
+      if(settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error(`Video failed to preload: ${src}`));
+    };
+
+    const cleanup = () => {
+      video.removeEventListener('loadeddata',finish);
+      video.removeEventListener('canplaythrough',finish);
+      video.removeEventListener('error',fail);
+    };
+
+    video.preload = 'auto';
+    video.muted = true;
+    video.playsInline = true;
+
+    video.addEventListener('loadeddata',finish,{once:true});
+    video.addEventListener('canplaythrough',finish,{once:true});
+    video.addEventListener('error',fail,{once:true});
+
+    video.src = src;
+    video.load();
+
+    // Do not hang forever on browsers that are conservative with preloading.
+    setTimeout(finish,8000);
+  }));
+}
+
+function preloadSequenceFolder(folder){
+  const promises = [];
+
+  for(let i=FIRST_FRAME;i<=LAST_FRAME;i++){
+    const src = `Sequences/${folder}/Title${String(i).padStart(2,'0')}.png`;
+    promises.push(preloadImageFile(src));
+  }
+
+  return Promise.all(promises);
+}
+
+async function waitForAssets(promises){
+  const list = promises.filter(Boolean);
+  if(!list.length) return;
+
+  let finished = false;
+  let loaderShown = false;
+
+  const timer = setTimeout(() => {
+    if(!finished){
+      loaderShown = true;
+      showLoading();
+    }
+  },140);
+
+  try{
+    await Promise.all(list);
+  }catch(err){
+    console.warn('Asset preload warning:',err);
+  }finally{
+    finished = true;
+    clearTimeout(timer);
+
+    if(loaderShown){
+      hideLoading();
+    }
+  }
+}
+
+/*
+  Proactive preloads NEVER show the loader.
+  They quietly warm the browser cache while the user is viewing
+  the current step.
+*/
+function warmNextStep(...promises){
+  Promise.all(promises.filter(Boolean)).catch(err => {
+    console.warn('Background preload warning:',err);
+  });
+}
+
+function preloadPlanStep(){
+  return Promise.all([
+    preloadImageFile('logo.png'),
+    preloadImageFile('Plan/top view.png'),
+    preloadImageFile('Plan/camera.png'),
+    preloadImageFile('Plan/cam view.png'),
+    preloadImageFile('Plan/mask.jpg')
+  ]);
+}
+
+function preloadShowcaseClip(clip){
+  return preloadVideoFile(`MP4/Vid_${String(clip).padStart(2,'0')}.mp4`);
+}
+
+function preloadOldMethodStep(){
+  return preloadVideoFile('MP4/old method.mp4');
+}
+
+function preloadNewMethodStep(){
+  return preloadVideoFile('MP4/new method.mp4');
+}
+
+function preloadOwnershipStep(){
+  return preloadImageFile('stage.jpg');
+}
+
+function preloadGraphStep(){
+  return Promise.all([
+    preloadVideoFile('Blue Background.mp4'),
+    preloadImageFile('mountain.png'),
+    preloadImageFile('logo.png'),
+    preloadImageFile('assets/speed-lightning.svg'),
+    preloadImageFile('assets/speed-bars.svg'),
+    preloadImageFile('assets/speed-trophy.svg')
+  ]);
+}
+
+
 /* =========================================================
    PAGE 1
    ========================================================= */
@@ -151,10 +348,7 @@ function framePath(frame){
 }
 
 function preloadSequence(){
-  for(let i=FIRST_FRAME;i<=LAST_FRAME;i++){
-    const img = new Image();
-    img.src = framePath(i);
-  }
+  return preloadSequenceFolder('Title 01');
 }
 
 function playTitleSequence(){
@@ -181,15 +375,23 @@ function playTitleSequence(){
       titleSequenceFrame.src = framePath(LAST_FRAME);
       sequenceRAF = null;
       sequenceContinueBtn.classList.add('is-visible');
+
+      // While the user looks at this frame, preload the next slide.
+      warmNextStep(preloadPlanStep());
     }
   }
 
   sequenceRAF = requestAnimationFrame(tick);
 }
 
-function startCurrentTechnology(){
+async function startCurrentTechnology(){
   if(introStarted) return;
   introStarted = true;
+
+  await waitForAssets([
+    preloadVideoFile('Blue Background.mp4'),
+    preloadSequenceFolder('Title 01')
+  ]);
 
   blueBackground.classList.add('is-active');
   blueBackground.currentTime = 0;
@@ -226,7 +428,9 @@ function resetPlanSlideVisuals(){
   technologyPanel.classList.remove('is-visible','is-fading-out');
 }
 
-function enterPlanSlide(){
+async function enterPlanSlide(){
+  await waitForAssets([preloadPlanStep()]);
+
   page1.classList.add('is-leaving');
 
   setTimeout(() => {
@@ -612,7 +816,13 @@ async function openSphereFromPanorama(){
   panoramaContinueBtn.disabled = true;
   panoramaPanel.classList.remove('is-visible');
 
-  const ready = await ensureSphereEngine();
+  let ready = false;
+  showLoading();
+  try{
+    ready = await ensureSphereEngine();
+  }finally{
+    hideLoading();
+  }
 
   if(!ready){
     sphereStage.classList.add('is-visible');
@@ -895,10 +1105,7 @@ function framePath2(frame){
 }
 
 function preloadSequence2(){
-  for(let i=FIRST_FRAME;i<=LAST_FRAME;i++){
-    const img = new Image();
-    img.src = framePath2(i);
-  }
+  return preloadSequenceFolder('Title 02');
 }
 
 function clearLeapTimers(){
@@ -958,6 +1165,8 @@ function playTitleSequence2(){
       titleSequenceFrame2.src = framePath2(LAST_FRAME);
       sequence2RAF = null;
       sequenceContinueBtn2.classList.add('is-visible');
+
+      warmNextStep(preloadShowcaseClip(1));
     }
   }
 
@@ -1126,11 +1335,20 @@ function playShowcaseClip(clip){
   if(p){
     p.catch(err => console.warn(`MP4/Vid_${String(clip).padStart(2,'0')}.mp4 could not play:`,err));
   }
+
+  // Always preload exactly what NEXT will need.
+  if(clip < 5){
+    warmNextStep(preloadShowcaseClip(clip+1));
+  }else{
+    warmNextStep(preloadOldMethodStep());
+  }
 }
 
 async function changeShowcaseClip(nextClip){
   if(showcaseClipChangeRunning) return;
   showcaseClipChangeRunning = true;
+
+  await waitForAssets([preloadShowcaseClip(nextClip)]);
 
   /*
     Make it unmistakable that this is a NEW slide:
@@ -1175,6 +1393,8 @@ async function changeShowcaseClip(nextClip){
 async function openVideoShowcase(){
   if(showcaseTransitionRunning) return;
   showcaseTransitionRunning = true;
+
+  await waitForAssets([preloadShowcaseClip(1)]);
 
   leapStage.classList.add('is-leaving-title02');
   await wait(460);
@@ -1237,6 +1457,9 @@ function clearOldMethodTimers(){
 
 async function openOldMethodSlide(){
   oldMethodVideo.loop = false;
+
+  await waitForAssets([preloadOldMethodStep()]);
+  warmNextStep(preloadNewMethodStep());
   if(oldMethodTransitionRunning) return;
   oldMethodTransitionRunning = true;
 
@@ -1355,6 +1578,9 @@ function clearNewMethodTimers(){
 
 async function openNewMethodSlide(){
   newMethodVideo.loop = false;
+
+  await waitForAssets([preloadNewMethodStep()]);
+  warmNextStep(preloadOwnershipStep());
   if(newMethodTransitionRunning) return;
   newMethodTransitionRunning = true;
 
@@ -1465,6 +1691,9 @@ async function openOwnershipSlide(){
 
 async function openOwnershipFromNewMethod(){
   clearNewMethodTimers();
+
+  await waitForAssets([preloadOwnershipStep()]);
+  warmNextStep(preloadGraphStep());
 
   ownershipStage.classList.add('is-visible');
   ownershipStage.setAttribute('aria-hidden','false');
@@ -1605,6 +1834,14 @@ async function openSpeedStageFromOwnership(){
   if(speedTransitionRunning) return;
   speedTransitionRunning = true;
 
+  await waitForAssets([preloadGraphStep()]);
+
+  // Final screen reuses Title 02, so warm it while the graph is being viewed.
+  warmNextStep(
+    preloadSequenceFolder('Title 02'),
+    preloadVideoFile('Blue Background.mp4')
+  );
+
   clearOwnershipTimers();
 
   ownershipStage.classList.add('is-transitioning-out');
@@ -1680,10 +1917,7 @@ function finalFramePath(frame){
 }
 
 function preloadFinalSequence(){
-  for(let i=FIRST_FRAME;i<=LAST_FRAME;i++){
-    const img = new Image();
-    img.src = finalFramePath(i);
-  }
+  return preloadSequenceFolder('Title 02');
 }
 
 function playFinalTitleSequence(){
@@ -1721,6 +1955,11 @@ function playFinalTitleSequence(){
 async function openFinalDemoStage(){
   if(finalTransitionRunning) return;
   finalTransitionRunning = true;
+
+  await waitForAssets([
+    preloadVideoFile('Blue Background.mp4'),
+    preloadSequenceFolder('Title 02')
+  ]);
 
   clearSpeedTimers();
 
@@ -1886,6 +2125,13 @@ sphereBackBtn.addEventListener('click',backOutsideSphere);
 
 sphereContinueBtn.addEventListener('click',openLeapSection);
 
+// By the time the user is interacting with the sphere, the next title
+// sequence and its looping background should already be in cache.
+warmNextStep(
+  preloadSequenceFolder('Title 02'),
+  preloadVideoFile('Blue Background.mp4')
+);
+
 sequenceContinueBtn2.addEventListener('click',openVideoShowcase);
 
 showcaseNextBtn.addEventListener('click',() => {
@@ -1984,19 +2230,22 @@ document.addEventListener('keydown',event => {
    ========================================================= */
 
 function preloadPlanAssets(){
-  [
-    'logo.png',
-    'Plan/top view.png',
-    'Plan/camera.png',
-    'Plan/cam view.png',
-    'Plan/mask.jpg'
-  ].forEach(src => {
-    const img = new Image();
-    img.src = src;
-  });
+  return preloadPlanStep();
 }
 
-preloadSequence();
-preloadSequence2();
-preloadFinalSequence();
-preloadPlanAssets();
+/*
+  Initial warm-up:
+  only preload what the first interaction needs.
+  Each subsequent step preloads its own NEXT asset in the background.
+*/
+warmNextStep(
+  preloadVideoFile('Blue Background.mp4'),
+  preloadSequenceFolder('Title 01')
+);
+
+/* Initialize the loading animation as soon as lottie-web is available. */
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded',initLoadingLottie,{once:true});
+}else{
+  initLoadingLottie();
+}

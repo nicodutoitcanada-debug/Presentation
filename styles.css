@@ -3062,3 +3062,48 @@ button{font:inherit}
   from{opacity:1}
   to{opacity:0}
 }
+
+
+/* =========================================================
+   V29 — GLOBAL LOTTIE LOADING OVERLAY
+   ========================================================= */
+
+.loading-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(0,0,0,.88);
+
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+
+  transition:
+    opacity 180ms ease,
+    visibility 0s linear 180ms;
+}
+
+.loading-overlay.is-visible{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+
+  transition:
+    opacity 180ms ease;
+}
+
+.loading-lottie{
+  width:min(22vw,260px);
+  aspect-ratio:1;
+}
+
+@media(max-width:760px){
+  .loading-lottie{
+    width:min(42vw,220px);
+  }
+}
