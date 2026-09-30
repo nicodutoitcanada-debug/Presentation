@@ -1,22 +1,39 @@
-HOME VIEW V33 — OLD/NEW METHOD MOBILE LANDSCAPE FIX
+HOME VIEW V34 — MOBILE PORTRAIT SAFE-LAYOUT PASS
 
 Replace:
 - index.html
 - styles.css
 - app.js
 
-FIXED:
-Both:
-- OLD METHOD (red bullets)
-- NEW METHOD (green bullets)
+This version specifically fixes the mobile portrait pages shown in the screenshots.
 
-now adapt to wide/short landscape screens.
+A protected bottom band is now reserved for mobile browser chrome so controls
+do not disappear underneath Chrome/Safari toolbars.
 
-Changes:
-- Left content block scales down as a unit on short landscape screens.
-- Title/logo/intro/bullets reduce proportionally.
-- Bullet spacing tightens so all three bullets remain visible.
-- CONTINUE stays fully on-screen at bottom-right.
-- Extra rules handle very short and ultra-wide mobile landscape ratios.
+FIXED PORTRAIT PAGES:
 
-All V32 360-view spacing fixes and all previous loading/responsive behavior remain unchanged.
+1. Camera / HOW IT USED TO BE DONE
+- Visual remains in the upper section.
+- Text panel is more compact.
+- All three paragraphs fit.
+- CONTINUE stays above the browser toolbar.
+
+2. Flat panorama explanation
+- Explanation panel moved safely above the browser toolbar.
+- Text/padding reduce on small phones.
+- CONTINUE remains visible.
+
+3. Outside interactive sphere
+- DRAG THE SPHERE guide sits above the button band.
+- ENTER 360 VIEW stays visible above browser chrome.
+
+4. Inside interactive sphere
+- Guide and BACK OUTSIDE / CONTINUE are separated.
+- Both buttons stay visible above browser chrome.
+
+5. OLD METHOD / NEW METHOD
+- Entire left narrative block scales down in portrait.
+- All three bullets fit.
+- CONTINUE is fixed above the mobile browser toolbar.
+
+V33 landscape fixes and all previous loading/preloading behavior are preserved.
