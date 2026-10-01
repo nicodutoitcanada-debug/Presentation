@@ -112,6 +112,10 @@ let showcaseClip = 1;
 let showcaseTransitionRunning = false;
 let showcaseClipChangeRunning = false;
 let showcaseVideoLoaderAnimation = null;
+
+const showcaseBufferPool = new Map();
+let showcaseBackgroundBufferStarted = false;
+
 let oldMethodTransitionRunning = false;
 let oldMethodTimers = [];
 let newMethodTransitionRunning = false;
@@ -348,7 +352,80 @@ function preloadPlanStep(){
   ]);
 }
 
+
+function getBufferedShowcaseVideo(clip){
+  if(showcaseBufferPool.has(clip)){
+    return showcaseBufferPool.get(clip);
+  }
+
+  const video = document.createElement('video');
+  video.preload = 'auto';
+  video.muted = true;
+  video.playsInline = true;
+  video.setAttribute('playsinline','');
+  video.style.position = 'fixed';
+  video.style.width = '1px';
+  video.style.height = '1px';
+  video.style.opacity = '0';
+  video.style.pointerEvents = 'none';
+  video.style.left = '-9999px';
+  video.style.top = '-9999px';
+  video.src = `MP4/Vid_${String(clip).padStart(2,'0')}.mp4`;
+
+  /*
+    Keeping the preload video attached is intentional.
+    Mobile browsers are much more likely to continue buffering an attached
+    media element than a detached temporary one.
+  */
+  document.body.appendChild(video);
+  video.load();
+
+  showcaseBufferPool.set(clip,video);
+  return video;
+}
+
+function bufferShowcaseClip(clip){
+  const video = getBufferedShowcaseVideo(clip);
+
+  // Calling load again is harmless and encourages mobile browsers to resume
+  // fetching if they previously suspended the preload.
+  if(video.readyState < 3){
+    try{ video.load(); }catch(err){}
+  }
+
+  return video;
+}
+
+function warmShowcaseAhead(fromClip){
+  /*
+    Buffer TWO clips ahead instead of only one.
+    9–16 MB videos are large for mobile, so this gives the browser much more
+    time while the viewer is reading/watching the current slide.
+  */
+  for(let clip=fromClip+1; clip<=Math.min(5,fromClip+2); clip++){
+    bufferShowcaseClip(clip);
+    warmNextStep(preloadShowcaseClip(clip));
+  }
+}
+
+function beginShowcaseBackgroundBuffering(){
+  if(showcaseBackgroundBufferStarted) return;
+  showcaseBackgroundBufferStarted = true;
+
+  /*
+    Prime Vid_01 and Vid_02 immediately. Then gently queue the remaining
+    clips rather than firing five large downloads at exactly the same time.
+  */
+  bufferShowcaseClip(1);
+  bufferShowcaseClip(2);
+
+  setTimeout(() => bufferShowcaseClip(3),1200);
+  setTimeout(() => bufferShowcaseClip(4),2600);
+  setTimeout(() => bufferShowcaseClip(5),4200);
+}
+
 function preloadShowcaseClip(clip){
+  bufferShowcaseClip(clip);
   return preloadVideoFile(`MP4/Vid_${String(clip).padStart(2,'0')}.mp4`);
 }
 
@@ -1203,7 +1280,13 @@ function playTitleSequence2(){
       sequence2RAF = null;
       sequenceContinueBtn2.classList.add('is-visible');
 
-      warmNextStep(preloadShowcaseClip(1));
+      // Start buffering the gameplay section while the user is still
+      // looking at the Title 02 end frame.
+      beginShowcaseBackgroundBuffering();
+      warmNextStep(
+        preloadShowcaseClip(1),
+        preloadShowcaseClip(2)
+      );
     }
   }
 
@@ -1386,14 +1469,24 @@ function playShowcaseClip(clip){
   showcaseVideo.src = src;
   showcaseVideo.load();
 
-  // If browser already has it fully cached, this fires almost immediately.
+  /*
+    If our persistent preload element already has usable buffered data,
+    the browser cache should satisfy this source quickly. Keep the Lottie
+    visible only until the real playback element reaches canplay.
+  */
+  const primed = showcaseBufferPool.get(clip);
+  if(primed && primed.readyState >= 3){
+    // Nudge the active element again so mobile browsers reuse the buffered data.
+    try{ showcaseVideo.load(); }catch(err){}
+  }
+
   if(showcaseVideo.readyState >= 3){
     onReady();
   }
 
-  // Always preload exactly what NEXT will need.
+  // Keep up to two gameplay clips buffered ahead on mobile/slow networks.
   if(clip < 5){
-    warmNextStep(preloadShowcaseClip(clip+1));
+    warmShowcaseAhead(clip);
   }else{
     warmNextStep(preloadOldMethodStep());
   }
@@ -1403,7 +1496,12 @@ async function changeShowcaseClip(nextClip){
   if(showcaseClipChangeRunning) return;
   showcaseClipChangeRunning = true;
 
-  await waitForAssets([preloadShowcaseClip(nextClip)]);
+  /*
+    Keep warming the next clips, but never freeze the current slide waiting
+    for a large MP4. If it still needs data, the Lottie loader will be visible
+    inside the video window after the transition.
+  */
+  warmNextStep(preloadShowcaseClip(nextClip));
 
   /*
     Make it unmistakable that this is a NEW slide:
@@ -1449,7 +1547,13 @@ async function openVideoShowcase(){
   if(showcaseTransitionRunning) return;
   showcaseTransitionRunning = true;
 
-  await waitForAssets([preloadShowcaseClip(1)]);
+  /*
+    Do not hold the entire presentation while a 9–16 MB MP4 finishes.
+    The video slide opens immediately and its in-window Lottie loader
+    handles any remaining buffering.
+  */
+  beginShowcaseBackgroundBuffering();
+  warmNextStep(preloadShowcaseClip(1));
 
   leapStage.classList.add('is-leaving-title02');
   await wait(460);
