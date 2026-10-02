@@ -4260,3 +4260,62 @@ button{font:inherit}
     top:79%;
   }
 }
+
+
+/* =========================================================
+   V37 — GAMEPLAY VIDEO LOADER VISIBILITY FIX
+   ========================================================= */
+
+.showcase-video-shell{
+  position:relative;
+  isolation:isolate;
+}
+
+.showcase-video{
+  position:relative;
+  z-index:1;
+}
+
+.showcase-video-loader{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.82);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity 180ms ease;
+}
+
+.showcase-video-loader.is-visible{
+  opacity:1;
+  visibility:visible;
+}
+
+.showcase-video-loader-lottie{
+  position:relative;
+  z-index:21;
+  width:min(22%,190px);
+  min-width:92px;
+  aspect-ratio:1;
+}
+
+.showcase-video-shell.is-loading .showcase-playback-controls{
+  opacity:0;
+  visibility:hidden;
+}
+
+.showcase-video-shell:not(.is-loading) .showcase-playback-controls{
+  opacity:1;
+  visibility:visible;
+}
+
+@media (orientation:portrait) and (max-width:760px){
+  .showcase-video-loader-lottie{
+    width:min(34%,150px);
+    min-width:86px;
+  }
+}

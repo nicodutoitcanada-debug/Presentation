@@ -51,6 +51,7 @@ const showcaseVideo = document.getElementById('showcaseVideo');
 
 const showcaseVideoLoader = document.getElementById('showcaseVideoLoader');
 const showcaseVideoLoaderLottie = document.getElementById('showcaseVideoLoaderLottie');
+const showcaseVideoShell = document.querySelector('.showcase-video-shell');
 
 const showcaseCopy = document.getElementById('showcaseCopy');
 const showcaseNextBtn = document.getElementById('showcaseNextBtn');
@@ -178,28 +179,40 @@ function initLoadingLottie(){
 
 
 function initShowcaseVideoLoader(){
-  if(showcaseVideoLoaderAnimation || !showcaseVideoLoaderLottie || !window.lottie) return;
+  if(showcaseVideoLoaderAnimation || !showcaseVideoLoaderLottie) return;
+
+  if(!window.lottie){
+    console.warn('Lottie library is not available for the showcase video loader.');
+    return;
+  }
 
   showcaseVideoLoaderAnimation = window.lottie.loadAnimation({
     container: showcaseVideoLoaderLottie,
     renderer: 'svg',
     loop: true,
     autoplay: false,
-    path: 'Lottie/loading intro.json'
+    path: 'Lottie/loading intro.json',
+    rendererSettings:{
+      preserveAspectRatio:'xMidYMid meet'
+    }
   });
 }
 
 function showShowcaseVideoLoader(){
   initShowcaseVideoLoader();
+
+  showcaseVideoShell.classList.add('is-loading');
   showcaseVideoLoader.classList.add('is-visible');
   showcaseVideoLoader.setAttribute('aria-hidden','false');
 
   if(showcaseVideoLoaderAnimation){
+    showcaseVideoLoaderAnimation.stop();
     showcaseVideoLoaderAnimation.goToAndPlay(0,true);
   }
 }
 
 function hideShowcaseVideoLoader(){
+  showcaseVideoShell.classList.remove('is-loading');
   showcaseVideoLoader.classList.remove('is-visible');
   showcaseVideoLoader.setAttribute('aria-hidden','true');
 
@@ -1452,39 +1465,64 @@ function playShowcaseClip(clip){
   showcaseVideo.pause();
   showShowcaseVideoLoader();
 
-  const onReady = () => {
+  let readyHandled = false;
+
+  const cleanupReadyListeners = () => {
     showcaseVideo.removeEventListener('loadeddata',onReady);
     showcaseVideo.removeEventListener('canplay',onReady);
-    hideShowcaseVideoLoader();
+    showcaseVideo.removeEventListener('playing',onPlaying);
+    showcaseVideo.removeEventListener('error',onError);
+  };
+
+  const onReady = () => {
+    if(readyHandled) return;
+    if(showcaseVideo.readyState < 3) return;
+
+    readyHandled = true;
+    cleanupReadyListeners();
 
     const p = showcaseVideo.play();
+
     if(p){
-      p.catch(err => console.warn(`${src} could not play:`,err));
+      p.then(() => {
+        hideShowcaseVideoLoader();
+      }).catch(err => {
+        console.warn(`${src} could not autoplay:`,err);
+        hideShowcaseVideoLoader();
+      });
+    }else{
+      hideShowcaseVideoLoader();
     }
   };
 
-  showcaseVideo.addEventListener('loadeddata',onReady,{once:true});
-  showcaseVideo.addEventListener('canplay',onReady,{once:true});
+  const onPlaying = () => {
+    if(!readyHandled){
+      readyHandled = true;
+      cleanupReadyListeners();
+    }
+    hideShowcaseVideoLoader();
+  };
+
+  const onError = () => {
+    console.warn(`${src} failed to load.`);
+    cleanupReadyListeners();
+    setTimeout(hideShowcaseVideoLoader,1200);
+  };
+
+  showcaseVideo.addEventListener('loadeddata',onReady);
+  showcaseVideo.addEventListener('canplay',onReady);
+  showcaseVideo.addEventListener('playing',onPlaying);
+  showcaseVideo.addEventListener('error',onError,{once:true});
 
   showcaseVideo.src = src;
   showcaseVideo.load();
 
-  /*
-    If our persistent preload element already has usable buffered data,
-    the browser cache should satisfy this source quickly. Keep the Lottie
-    visible only until the real playback element reaches canplay.
-  */
-  const primed = showcaseBufferPool.get(clip);
-  if(primed && primed.readyState >= 3){
-    // Nudge the active element again so mobile browsers reuse the buffered data.
-    try{ showcaseVideo.load(); }catch(err){}
-  }
+  requestAnimationFrame(() => {
+    if(showcaseVideo.readyState >= 3){
+      onReady();
+    }
+  });
 
-  if(showcaseVideo.readyState >= 3){
-    onReady();
-  }
-
-  // Keep up to two gameplay clips buffered ahead on mobile/slow networks.
   if(clip < 5){
     warmShowcaseAhead(clip);
   }else{
@@ -2405,7 +2443,10 @@ warmNextStep(
 
 /* Initialize the loading animation as soon as lottie-web is available. */
 if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded',initLoadingLottie,{once:true});
+  document.addEventListener('DOMContentLoaded',() => {
+    initLoadingLottie();
+    initShowcaseVideoLoader();
+  },{once:true});
 }else{
   initLoadingLottie();
   initShowcaseVideoLoader();
