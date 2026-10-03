@@ -4319,3 +4319,542 @@ button{font:inherit}
     min-width:86px;
   }
 }
+
+
+/* =========================================================
+   V38 — MOBILE PORTRAIT GRAPH REDESIGN
+   This is a separate layout, not a scaled desktop composition.
+   ========================================================= */
+
+.speed-mobile-layout{
+  display:none;
+}
+
+@media (orientation:portrait) and (max-width:760px){
+
+  .speed-stage{
+    overflow:hidden;
+  }
+
+  /* Hide the desktop infographic entirely on portrait phones. */
+  .speed-content,
+  .speed-continue{
+    display:none !important;
+  }
+
+  .speed-mobile-layout{
+    position:absolute;
+    inset:0;
+    z-index:7;
+    display:block;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+
+    padding:
+      max(92px, calc(env(safe-area-inset-top) + 72px))
+      18px
+      calc(max(112px, env(safe-area-inset-bottom) + 96px));
+
+    font-family:'MyriadPro-Light',Arial,Helvetica,sans-serif;
+    color:#fff;
+  }
+
+  .speed-mobile-layout::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    background:
+      linear-gradient(180deg,
+        rgba(3,10,18,.24) 0%,
+        rgba(3,10,18,.60) 42%,
+        rgba(3,10,18,.88) 100%
+      );
+  }
+
+  .speed-mobile-item{
+    opacity:0;
+    transform:translateY(22px) scale(.985);
+    transition:
+      opacity 1050ms ease,
+      transform 1500ms cubic-bezier(.16,1,.3,1);
+  }
+
+  .speed-stage.animate-in .speed-mobile-item{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+
+  .speed-mobile-delay-1{transition-delay:0ms}
+  .speed-mobile-delay-2{transition-delay:180ms}
+  .speed-mobile-delay-3{transition-delay:360ms}
+  .speed-mobile-delay-4{transition-delay:520ms}
+  .speed-mobile-delay-5{transition-delay:680ms}
+  .speed-mobile-delay-6{transition-delay:840ms}
+  .speed-mobile-delay-7{transition-delay:1000ms}
+  .speed-mobile-delay-8{transition-delay:1160ms}
+
+  /* ---------- HERO ---------- */
+
+  .speed-mobile-hero{
+    margin:0 auto 18px;
+    width:min(100%,480px);
+  }
+
+  .speed-mobile-kicker{
+    margin:0 0 13px;
+    color:rgba(255,255,255,.78);
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:12px;
+    line-height:1.08;
+    letter-spacing:.06em;
+  }
+
+  .speed-mobile-brand-row{
+    display:grid;
+    grid-template-columns:72px 1fr;
+    gap:14px;
+    align-items:center;
+  }
+
+  .speed-mobile-logo{
+    width:72px;
+    height:auto;
+    display:block;
+  }
+
+  .speed-mobile-heading h2{
+    margin:0;
+    color:#f04420;
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:clamp(26px,7.2vw,34px);
+    line-height:.92;
+    letter-spacing:-.025em;
+  }
+
+  .speed-mobile-heading h2 span{
+    display:block;
+    font-family:'MyriadPro-Light',Arial,Helvetica,sans-serif;
+    font-weight:300;
+  }
+
+  .speed-mobile-heading p{
+    margin:8px 0 0;
+    color:rgba(255,255,255,.72);
+    font-family:'MyriadPro-Light',Arial,Helvetica,sans-serif;
+    font-size:clamp(11px,3.2vw,14px);
+    line-height:1.08;
+  }
+
+  /* ---------- CHART CARD ---------- */
+
+  .speed-mobile-chart-card{
+    width:min(100%,480px);
+    margin:0 auto 14px;
+    padding:16px 14px 14px;
+
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:22px;
+    background:rgba(3,12,20,.62);
+    -webkit-backdrop-filter:blur(14px);
+    backdrop-filter:blur(14px);
+    box-shadow:0 20px 50px rgba(0,0,0,.24);
+  }
+
+  .speed-mobile-chart-head{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:12px;
+    align-items:end;
+    margin-bottom:14px;
+  }
+
+  .speed-mobile-chart-label{
+    color:rgba(255,255,255,.56);
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:10px;
+    line-height:1.05;
+    letter-spacing:.09em;
+  }
+
+  .speed-mobile-chart-title{
+    margin-top:4px;
+    color:#fff;
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:16px;
+    line-height:1.05;
+  }
+
+  .speed-mobile-hero-stat{
+    text-align:right;
+  }
+
+  .speed-mobile-hero-stat strong{
+    display:block;
+    color:#f04420;
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:38px;
+    line-height:.82;
+  }
+
+  .speed-mobile-hero-stat span{
+    display:block;
+    margin-top:5px;
+    color:rgba(255,255,255,.84);
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:9px;
+    line-height:1.00;
+  }
+
+  .speed-mobile-chart-wrap{
+    position:relative;
+    height:244px;
+    margin-left:30px;
+  }
+
+  .speed-mobile-chart-svg{
+    position:absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height:220px;
+    overflow:visible;
+  }
+
+  .speed-mobile-grid line{
+    stroke:rgba(255,255,255,.16);
+    stroke-width:1;
+    stroke-dasharray:4 5;
+  }
+
+  .speed-mobile-axis{
+    stroke:rgba(255,255,255,.86);
+    stroke-width:1.6;
+  }
+
+  .speed-mobile-line{
+    fill:none;
+    stroke-width:3.2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    stroke-dasharray:1000;
+    stroke-dashoffset:1000;
+  }
+
+  .speed-stage.draw-lines .speed-mobile-line{
+    animation:speedMobileDraw 2600ms cubic-bezier(.16,1,.3,1) forwards;
+  }
+
+  .speed-mobile-line-leader{
+    stroke:#f04420;
+    filter:drop-shadow(0 0 4px rgba(240,68,32,.42));
+  }
+
+  .speed-mobile-line-laggard{
+    stroke:#fff;
+  }
+
+  @keyframes speedMobileDraw{
+    to{stroke-dashoffset:0}
+  }
+
+  .speed-mobile-marker-group{
+    opacity:0;
+  }
+
+  .speed-stage.show-markers .speed-mobile-marker-group{
+    animation:speedMobileMarkers .7s ease forwards;
+  }
+
+  @keyframes speedMobileMarkers{
+    to{opacity:1}
+  }
+
+  .speed-mobile-markers-leader circle{
+    fill:#f04420;
+  }
+
+  .speed-mobile-markers-laggard circle{
+    fill:#fff;
+  }
+
+  .speed-mobile-y-label{
+    position:absolute;
+    left:-31px;
+    color:rgba(255,255,255,.70);
+    font-size:10px;
+    transform:translateY(-50%);
+  }
+
+  .speed-mobile-y-label.y8{top:0}
+  .speed-mobile-y-label.y6{top:55px}
+  .speed-mobile-y-label.y4{top:110px}
+  .speed-mobile-y-label.y2{top:165px}
+  .speed-mobile-y-label.y0{top:220px}
+
+  .speed-mobile-x-labels{
+    position:absolute;
+    left:-3px;
+    right:-3px;
+    top:225px;
+    display:flex;
+    justify-content:space-between;
+    color:rgba(255,255,255,.66);
+    font-size:10px;
+  }
+
+  .speed-mobile-x-title{
+    margin-top:4px;
+    text-align:center;
+    color:rgba(255,255,255,.54);
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:9px;
+    letter-spacing:.10em;
+  }
+
+  /* ---------- METRIC CARDS ---------- */
+
+  .speed-mobile-metrics{
+    width:min(100%,480px);
+    margin:0 auto 14px;
+    display:grid;
+    gap:10px;
+  }
+
+  .speed-mobile-metric{
+    display:grid;
+    grid-template-columns:52px 72px 1fr;
+    gap:10px;
+    align-items:center;
+
+    padding:11px 12px;
+    border:1px solid rgba(91,205,255,.28);
+    border-radius:18px;
+    background:rgba(0,19,31,.64);
+    -webkit-backdrop-filter:blur(12px);
+    backdrop-filter:blur(12px);
+  }
+
+  .speed-mobile-metric img{
+    width:44px;
+    height:44px;
+    object-fit:contain;
+  }
+
+  .speed-mobile-metric strong{
+    color:#86d9ff;
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:28px;
+    line-height:1;
+  }
+
+  .speed-mobile-metric p{
+    margin:0;
+    color:rgba(255,255,255,.74);
+    font-size:12px;
+    line-height:1.18;
+  }
+
+  /* ---------- BASELINE ---------- */
+
+  .speed-mobile-baseline{
+    width:min(100%,480px);
+    margin:0 auto 14px;
+    padding:12px 14px;
+    display:grid;
+    grid-template-columns:56px 1fr;
+    gap:12px;
+    align-items:center;
+
+    border-radius:18px;
+    background:rgba(0,0,0,.36);
+    border:1px solid rgba(255,255,255,.10);
+  }
+
+  .speed-mobile-baseline-line{
+    height:3px;
+    border-radius:999px;
+    background:#83dcff;
+    box-shadow:0 0 10px rgba(131,220,255,.28);
+  }
+
+  .speed-mobile-baseline strong{
+    display:block;
+    color:#83dcff;
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:17px;
+  }
+
+  .speed-mobile-baseline p{
+    margin:3px 0 0;
+    color:rgba(255,255,255,.62);
+    font-size:11px;
+    line-height:1.14;
+  }
+
+  /* ---------- BENEFITS ---------- */
+
+  .speed-mobile-benefits{
+    width:min(100%,480px);
+    margin:0 auto 14px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
+
+  .speed-mobile-benefits article{
+    min-width:0;
+    padding:10px 8px;
+    text-align:center;
+    border-radius:16px;
+    background:rgba(0,0,0,.30);
+    border:1px solid rgba(255,255,255,.10);
+  }
+
+  .speed-mobile-benefits img{
+    width:34px;
+    height:34px;
+    margin:0 auto 7px;
+  }
+
+  .speed-mobile-benefits strong{
+    display:block;
+    color:#fff;
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:10px;
+    line-height:1.05;
+  }
+
+  .speed-mobile-benefits span{
+    display:block;
+    margin-top:4px;
+    color:rgba(255,255,255,.48);
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:7.6px;
+    line-height:1.08;
+    letter-spacing:.04em;
+  }
+
+  /* ---------- SOURCES ---------- */
+
+  .speed-mobile-sources{
+    width:min(100%,480px);
+    margin:0 auto 14px;
+    padding:12px 14px;
+    border-radius:16px;
+    background:rgba(0,0,0,.28);
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .speed-mobile-sources strong{
+    display:block;
+    margin-bottom:6px;
+    color:rgba(255,255,255,.68);
+    font-family:'MyriadPro-Bold',Arial,Helvetica,sans-serif;
+    font-size:9px;
+    letter-spacing:.12em;
+  }
+
+  .speed-mobile-sources p{
+    margin:0 0 5px;
+    color:rgba(255,255,255,.46);
+    font-size:8.6px;
+    line-height:1.18;
+  }
+
+  .speed-mobile-sources p:last-child{
+    margin-bottom:0;
+  }
+
+  /* ---------- CONTINUE ---------- */
+
+  .speed-mobile-continue{
+    display:block;
+    width:min(84%,300px);
+    margin:18px auto 0;
+    opacity:0;
+    transform:translateY(14px);
+    pointer-events:none;
+  }
+
+  .speed-stage.show-continue .speed-mobile-continue{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+}
+
+/* Smaller portrait phones */
+@media (orientation:portrait) and (max-width:430px){
+
+  .speed-mobile-layout{
+    padding-left:14px;
+    padding-right:14px;
+  }
+
+  .speed-mobile-brand-row{
+    grid-template-columns:64px 1fr;
+    gap:11px;
+  }
+
+  .speed-mobile-logo{
+    width:64px;
+  }
+
+  .speed-mobile-heading h2{
+    font-size:25px;
+  }
+
+  .speed-mobile-heading p{
+    font-size:11px;
+  }
+
+  .speed-mobile-chart-card{
+    padding:14px 12px 13px;
+  }
+
+  .speed-mobile-chart-title{
+    font-size:14px;
+  }
+
+  .speed-mobile-hero-stat strong{
+    font-size:34px;
+  }
+
+  .speed-mobile-chart-wrap{
+    height:224px;
+  }
+
+  .speed-mobile-chart-svg{
+    height:200px;
+  }
+
+  .speed-mobile-y-label.y6{top:50px}
+  .speed-mobile-y-label.y4{top:100px}
+  .speed-mobile-y-label.y2{top:150px}
+  .speed-mobile-y-label.y0{top:200px}
+
+  .speed-mobile-x-labels{
+    top:205px;
+  }
+
+  .speed-mobile-metric{
+    grid-template-columns:44px 62px 1fr;
+    padding:10px;
+  }
+
+  .speed-mobile-metric img{
+    width:38px;
+    height:38px;
+  }
+
+  .speed-mobile-metric strong{
+    font-size:24px;
+  }
+
+  .speed-mobile-metric p{
+    font-size:11px;
+  }
+}

@@ -1,39 +1,44 @@
-HOME VIEW V34 — MOBILE PORTRAIT SAFE-LAYOUT PASS
+HOME VIEW V38 — MOBILE PORTRAIT GRAPH REDESIGN
 
 Replace:
 - index.html
 - styles.css
 - app.js
 
-This version specifically fixes the mobile portrait pages shown in the screenshots.
+Also copy the NEW folder:
+assets/mobile-speed/
 
-A protected bottom band is now reserved for mobile browser chrome so controls
-do not disappear underneath Chrome/Safari toolbars.
+NEW MOBILE ASSETS
+- assets/mobile-speed/leader.svg
+- assets/mobile-speed/decision.svg
+- assets/mobile-speed/efficiency.svg
 
-FIXED PORTRAIT PAGES:
+WHAT CHANGED
 
-1. Camera / HOW IT USED TO BE DONE
-- Visual remains in the upper section.
-- Text panel is more compact.
-- All three paragraphs fit.
-- CONTINUE stays above the browser toolbar.
+DESKTOP / LANDSCAPE
+- Existing graph slide remains untouched.
 
-2. Flat panorama explanation
-- Explanation panel moved safely above the browser toolbar.
-- Text/padding reduce on small phones.
-- CONTINUE remains visible.
+MOBILE PORTRAIT
+- The desktop infographic is completely hidden.
+- A dedicated portrait layout is shown instead.
+- The portrait version is scrollable inside the slide so content is never cut off.
+- Header/logo/title are rebuilt for phone proportions.
+- Graph is placed inside its own readable card.
+- The right-side desktop stats are converted into three stacked mobile metric cards.
+- Laggard baseline becomes its own mobile callout.
+- Decide Faster / Implement Sooner / Stay Ahead become three compact mobile cards.
+- Sources move into their own readable source panel.
+- Continue appears after the existing graph animation timing and sits at the bottom of the mobile flow.
+- Mobile graph lines still animate when the desktop graph animation classes fire.
 
-3. Outside interactive sphere
-- DRAG THE SPHERE guide sits above the button band.
-- ENTER 360 VIEW stays visible above browser chrome.
+MOBILE COPY USED
+5x — Technology leaders’ revenue growth rate vs. laggards.
+2x — Decision-making winners were twice as likely to report returns of 20% or more.
+30% — Higher acquisition efficiency for companies embedding digital sales.
 
-4. Inside interactive sphere
-- Guide and BACK OUTSIDE / CONTINUE are separated.
-- Both buttons stay visible above browser chrome.
+SOURCES
+1. Accenture, Make the Leap, Take the Lead (2021)
+2. McKinsey, Decision Making in the Age of Urgency (2019)
+3. McKinsey, A Post-COVID-19 Commercial-Recovery Strategy for B2B Companies (2020)
 
-5. OLD METHOD / NEW METHOD
-- Entire left narrative block scales down in portrait.
-- All three bullets fit.
-- CONTINUE is fixed above the mobile browser toolbar.
-
-V33 landscape fixes and all previous loading/preloading behavior are preserved.
+All existing V37 loading, buffering, sphere, responsive, and sequence behavior is preserved.

@@ -79,6 +79,10 @@ const speedBlueBackground = document.getElementById('speedBlueBackground');
 const speedMountain = document.getElementById('speedMountain');
 const speedContinueBtn = document.getElementById('speedContinueBtn');
 
+const speedMobileLayout = document.getElementById('speedMobileLayout');
+const speedMobileContinueBtn = document.getElementById('speedMobileContinueBtn');
+
+
 const finalDemoStage = document.getElementById('finalDemoStage');
 const finalBlueBackground = document.getElementById('finalBlueBackground');
 const finalTitleSequence = document.getElementById('finalTitleSequence');
@@ -1996,6 +2000,11 @@ async function openSpeedStage(){
   speedStage.classList.add('is-visible');
   speedStage.setAttribute('aria-hidden','false');
 
+  if(speedMobileLayout){
+    speedMobileLayout.setAttribute('aria-hidden','false');
+    speedMobileLayout.scrollTop = 0;
+  }
+
   speedBlueBackground.currentTime = 0;
   const p = speedBlueBackground.play();
   if(p){
@@ -2103,6 +2112,11 @@ function resetSpeedStage(){
   );
 
   speedStage.setAttribute('aria-hidden','true');
+
+  if(speedMobileLayout){
+    speedMobileLayout.setAttribute('aria-hidden','true');
+    speedMobileLayout.scrollTop = 0;
+  }
 }
 
 
@@ -2350,6 +2364,8 @@ newMethodContinueBtn.addEventListener('click',openOwnershipFromNewMethod);
 ownershipContinueBtn.addEventListener('click',openSpeedStageFromOwnership);
 
 speedContinueBtn.addEventListener('click',openFinalDemoStage);
+
+speedMobileContinueBtn.addEventListener('click',openFinalDemoStage);
 
 
 showcasePlayBtn.addEventListener('click',() => {
