@@ -87,7 +87,9 @@ const finalDemoStage = document.getElementById('finalDemoStage');
 const finalBlueBackground = document.getElementById('finalBlueBackground');
 const finalTitleSequence = document.getElementById('finalTitleSequence');
 const finalTitleSequenceFrame = document.getElementById('finalTitleSequenceFrame');
-const requestDemoBtn = document.getElementById('requestDemoBtn');
+const finalContactPanel = document.getElementById('finalContactPanel');
+const copyMarieEmailBtn = document.getElementById('copyMarieEmailBtn');
+const copyMarieEmailStatus = document.getElementById('copyMarieEmailStatus');
 
 const loadingOverlay = document.getElementById('loadingOverlay');
 const loadingLottie = document.getElementById('loadingLottie');
@@ -2157,7 +2159,9 @@ function playFinalTitleSequence(){
     }else{
       finalTitleSequenceFrame.src = finalFramePath(LAST_FRAME);
       finalSequenceRAF = null;
-      requestDemoBtn.classList.add('is-visible');
+      if(finalContactPanel){
+        finalContactPanel.classList.add('is-visible');
+      }
     }
   }
 
@@ -2254,7 +2258,12 @@ function resetFinalDemoStage(){
 
   finalTitleSequence.classList.remove('is-visible');
   finalTitleSequenceFrame.removeAttribute('src');
-  requestDemoBtn.classList.remove('is-visible');
+  if(finalContactPanel){
+    finalContactPanel.classList.remove('is-visible');
+  }
+  if(copyMarieEmailStatus){
+    copyMarieEmailStatus.textContent = '';
+  }
 
   finalDemoStage.classList.remove('is-visible');
   finalDemoStage.setAttribute('aria-hidden','true');
@@ -2400,22 +2409,20 @@ sphereFallbackBackBtn.addEventListener('click',() => {
 homeBtn.addEventListener('click',resetIntro);
 
 
-requestDemoBtn.addEventListener('click',() => {
-  const to = 'marie@homeviewsolutions.com';
-  const subject = 'Request Live Demo';
 
-  const gmailUrl =
-    'https://mail.google.com/mail/?view=cm&fs=1' +
-    '&to=' + encodeURIComponent(to) +
-    '&su=' + encodeURIComponent(subject);
 
-  const composeWindow = window.open(gmailUrl,'_blank','noopener');
+if(copyMarieEmailBtn){
+  copyMarieEmailBtn.addEventListener('click',async() => {
+    const email = 'marie@homeviewsolutions.com';
 
-  if(!composeWindow){
-    window.location.href =
-      'mailto:' + to + '?subject=' + encodeURIComponent(subject);
-  }
-});
+    try{
+      await navigator.clipboard.writeText(email);
+      copyMarieEmailStatus.textContent = 'Email address copied.';
+    }catch(err){
+      copyMarieEmailStatus.textContent = email;
+    }
+  });
+}
 
 fullscreenBtn.addEventListener('click',async() => {
   try{

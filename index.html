@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Home View Online Presentation</title>
-  <link rel="stylesheet" href="styles.css?v=38">
+  <link rel="stylesheet" href="styles.css?v=39">
 </head>
 <body>
 <main id="presentation" class="presentation">
@@ -788,14 +788,27 @@
       <img id="finalTitleSequenceFrame" alt="">
     </div>
 
-    <button
-      id="requestDemoBtn"
-      class="standard-continue request-demo-button"
-      type="button"
-      aria-label="Request Live Demo by email"
-    >
-      REQUEST LIVE DEMO
-    </button>
+    <div id="finalContactPanel" class="final-contact-panel">
+      <div class="final-contact-title">Ready to see it live?</div>
+      <div class="final-contact-subtitle">Choose the easiest way to reach Marie.</div>
+
+      <div class="final-contact-actions">
+        <a id="bookDemoBtn" class="standard-continue final-contact-primary" href="book-demo.html">
+          BOOK A LIVE DEMO
+        </a>
+
+        <a id="emailMarieBtn" class="standard-continue final-contact-secondary"
+           href="mailto:marie@homeviewsolutions.com?subject=Request%20Live%20Demo">
+          EMAIL MARIE
+        </a>
+      </div>
+
+      <button id="copyMarieEmailBtn" class="final-copy-email" type="button">
+        COPY EMAIL ADDRESS
+      </button>
+
+      <div id="copyMarieEmailStatus" class="final-copy-status" aria-live="polite"></div>
+    </div>
 
   </section>
 
@@ -822,6 +835,6 @@
 
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
-<script src="app.js?v=38"></script>
+<script src="app.js?v=39"></script>
 </body>
 </html>
