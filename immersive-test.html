@@ -2,25 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
-  <title>Home View Presentation — Immersive Safari Test</title>
+  <title>Home View Presentation – Lux-style Layout Test</title>
   <style>
-    html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000;}
-    *,*::before,*::after{box-sizing:border-box;}
-    iframe{display:block;position:fixed;inset:0;width:100%;height:100vh;height:100dvh;border:0;overflow:hidden;background:#000;}
+    html, body { width:100%; min-height:100%; margin:0; padding:0; background:#000; overflow:hidden; }
+    *, *::before, *::after { box-sizing:border-box; }
+    /* Isolated test approximating the Lux Elementor Canvas + full-width Flexbox
+       container, with 100vh minimum height, zero gaps and zero page padding. */
+    .elementor-canvas-test {
+      display:flex;
+      flex-direction:column;
+      width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+      gap:0;
+      margin:0;
+      padding:0;
+      background:#000;
+    }
+    .elementor-html-test { width:100%; flex:1 1 auto; min-width:0; }
+    .elementor-html-test iframe {
+      display:block;
+      width:100%;
+      height:100vh;
+      border:none;
+      overflow:hidden;
+    }
   </style>
 </head>
 <body>
-  <!-- Test the same iframe embedding approach as Lux on Elementor.
-       The existing presentation and all its video/content remain unchanged.
-       No scaling, zoom, transform or video cropping is applied by this wrapper. -->
-  <iframe
-    src="./"
-    title="Home View Presentation"
-    allow="autoplay; fullscreen"
-    allowfullscreen
-    scrolling="no"
-  ></iframe>
+  <div class="elementor-canvas-test">
+    <div class="elementor-html-test">
+      <iframe
+        src="./"
+        title="Home View Presentation"
+        style="width:100%; height:100vh; border:none; overflow:hidden;"
+        allow="autoplay; fullscreen"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
 </body>
 </html>
